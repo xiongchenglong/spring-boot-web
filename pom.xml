@@ -35,7 +35,7 @@
             <artifactId>jquery</artifactId>
             <version>3.4.1</version>
         </dependency>
-
+<!--手动阀手动阀会受到发货-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
