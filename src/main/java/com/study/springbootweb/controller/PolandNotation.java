@@ -1,5 +1,6 @@
 package com.study.springbootweb.controller;
 
+import javax.security.auth.Subject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -10,10 +11,43 @@ import java.util.Stack;
 public class PolandNotation {
     public static void main(String[] args) {
         //为了方便将表达式用空格隔开
-        String suffixExp = "3 4 + 5 * 6 -";
+        String suffixExp = "1 + ( ( 2 + 3 ) * 4 ) - 5";
         List<String> list = getList(suffixExp);
-        int result = calc(list);
-        System.out.println("结果为：" + result);
+        System.out.println("中缀表达式：" + list);
+        List<String> result = parseSuffixExpreesionList(list);
+        int num = calc(result);
+        System.out.println("后缀表达式：" + result);
+        System.out.println(num);
+    }
+
+    public static List<String> parseSuffixExpreesionList(List<String> ls) {
+        //符号栈
+        Stack<String> s1 = new Stack<>();
+        //因为s2这个栈在整个转换过程中没有pop操作，还需要逆序输出，所以使用list代替
+        //存储中间结果
+        ArrayList<String> s2 = new ArrayList<>();
+
+        for (String item : ls) {
+            if (item.matches("\\d+")) {
+                s2.add(item);
+            } else if ("(".equals(item)) {
+                s1.push(item);
+            } else if (")".equals(item)) {
+                while (!"(".equals(s1.peek())) {
+                    s2.add(s1.pop());
+                }
+                s1.pop();
+            } else {
+                while (s1.size() != 0 && Operation.getValue(s1.peek()) >= Operation.getValue(item)) {
+                    s2.add(s1.pop());
+                }
+                s1.push(item);
+            }
+        }
+        while (s1.size() != 0) {
+            s2.add(s1.pop());
+        }
+        return s2;
     }
 
     //将字符串放入list中
@@ -51,5 +85,34 @@ public class PolandNotation {
             }
         }
         return Integer.parseInt(stack.pop());
+    }
+}
+
+class Operation {
+    private static int ADD = 1;
+    private static int SUB = 1;
+    private static int MUL = 2;
+    private static int DIV = 2;
+
+    public static int getValue(String operation) {
+        int result = 0;
+        switch (operation) {
+            case "+":
+                result = ADD;
+                break;
+            case "-":
+                result = SUB;
+                break;
+            case "*":
+                result = MUL;
+                break;
+            case "/":
+                result = DIV;
+                break;
+            default:
+                System.out.println("不存在该运算符！");
+                break;
+        }
+        return result;
     }
 }
